@@ -16,16 +16,8 @@ class DataLoader():
             raise Exception("Path "+filepath+" doesnt seem to contain the required folders.")
 
     def load_1a(self):
-        train = []
-        test = []
-
-        with open(self.basepath+"/simple_split/tasks_train_simple.txt", "r") as f:
-            for line in f:
-                train.append(line_splitter(line))
-
-        with open(self.basepath+"/simple_split/tasks_test_simple.txt", "r") as f:
-            for line in f:
-                test.append(line_splitter(line))
+        train = self.file_loader("/simple_split/tasks_train_simple.txt")
+        test = self.file_loader("/simple_split/tasks_test_simple.txt")
 
         return (np.asarray(train), np.asarray(test))
 
@@ -34,21 +26,21 @@ class DataLoader():
         splits = ["1", "2", "4", "8", "16", "32", "64"]
 
         for percentile in splits:
-            train = []
-            test = []
+            train = self.file_loader("/simple_split/size_variations/tasks_train_simple_p{}.txt".format(percentile))
+            test = self.file_loader("/simple_split/size_variations/tasks_test_simple_p{}.txt".format(percentile))
             
-            with open(self.basepath+"/simple_split/size_variations/tasks_train_simple_p{}.txt".format(percentile), "r") as f:
-                for line in f:
-                    train.append(line_splitter(line))
-
-            with open(self.basepath+"/simple_split/size_variations/tasks_test_simple_p{}.txt".format(percentile), "r") as f:
-                for line in f:
-                    test.append(line_splitter(line))
-
             percentile_dict[percentile] = (np.asarray(train), np.asarray(test))
             
         return percentile_dict
 
+    def file_loader(self, path):
+        sent_list = []
+        with open(self.basepath+path, "r") as f:
+                    for line in f:
+                        sent_list.append(line_splitter(line))
+        return sent_list
+
+    
 def line_splitter(sentence):
     sent_list = sentence.split("OUT: ")
     sent_list[0] = sent_list[0].strip("IN: ")
