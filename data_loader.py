@@ -33,6 +33,41 @@ class DataLoader():
             
         return percentile_dict
 
+    def load_2(self):
+        train = self.file_loader("/length_split/tasks_train_length.txt")
+        test = self.file_loader("/length_split/tasks_test_length.txt")
+
+        return (np.asarray(train), np.asarray(test))
+
+    def load_3(self):
+        """
+        loads the datasets for both parts of the experiment
+        the first part where both primitives appear without compositional commands
+        the second part where 'jump' primitive appears in
+        compositional commands of varying lengths
+        returns a dictionary of pairs all possible train/test sets
+        """
+        data_dict = {}
+        nums = ["1", "2", "4", "8", "16", "32"]
+        reps = ["1", "2", "3", "4", "5"]
+
+        train = self.file_loader("/add_prim_split/tasks_train_addprim_jump.txt")
+        test = self.file_loader("/add_prim_split/tasks_test_addprim_jump.txt")
+        data_dict['jump'] = (np.asarray(train), np.asarray(test))
+
+        train = self.file_loader("/add_prim_split/tasks_train_addprim_turn_left.txt")
+        test = self.file_loader("/add_prim_split/tasks_test_addprim_turn_left.txt")
+        data_dict['lturn'] = (np.asarray(train), np.asarray(test))
+        
+        for num in nums:
+            for rep in reps:
+                train = self.file_loader("/add_prim_split/with_additional_examples/tasks_train_addprim_complex_jump_num{}_rep{}.txt".format(num, rep))
+                test = self.file_loader("/add_prim_split/with_additional_examples/tasks_test_addprim_complex_jump_num{}_rep{}.txt".format(num, rep))
+                
+                data_dict['jump_num{}_rep{}'.format(num, rep)] = (np.asarray(train), np.asarray(test))
+            
+        return data_dict
+
     def file_loader(self, path):
         sent_list = []
         with open(self.basepath+path, "r") as f:
@@ -64,4 +99,4 @@ dl = DataLoader("SCAN")
 # all returns are numpy arrays
 
 
-import ipdb; ipdb.set_trace()
+#import ipdb; ipdb.set_trace()
