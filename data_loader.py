@@ -83,8 +83,6 @@ def line_splitter(sentence):
 
     return sent_list
 
-dl = DataLoader("SCAN")
-
 # examples:
 # 1a :
 #   train, test = dl.load_1a()
@@ -97,6 +95,3 @@ dl = DataLoader("SCAN")
 #   train[0][1] first train sentence, "OUT"
 #
 # all returns are numpy arrays
-
-
-#import ipdb; ipdb.set_trace()
