@@ -112,7 +112,7 @@ def trainIters(encoder, decoder, train_data, input_lang, output_lang, learning_r
     print(train_data.shape[0])
     print_loss_total = 0
 
-    for iter in range(200):
+    for iter in range(train_data.shape[0]):
         training_pair = tensorsFromPair(train_data[iter], input_lang, output_lang)
         input_tensor = training_pair[0]
         output_tensor = training_pair[1]
