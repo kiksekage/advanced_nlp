@@ -33,7 +33,7 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=100
                 decoder_input, decoder_hidden)
             topv, topi = decoder_output.data.topk(1)
             if topi.item() == EOS_token:
-                decoded_words.append('<EOS>')
+                #decoded_words.append('<EOS>')
                 break
             else:
                 decoded_words.append(output_lang.index2word[topi.item()])
@@ -67,6 +67,7 @@ miss = 0
 
 for test_point in test_data:
     pred = evaluate(encoder, decoder, test_point[0], train_in, train_out)
+    pred = " ".join(pred)
     if pred != test_point[1]:
         miss += 1
 

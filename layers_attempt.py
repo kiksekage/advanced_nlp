@@ -7,6 +7,8 @@ import torch.optim as optim
 from data_loader import *
 from embeddings import *
 
+import random
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class CustomLoss(torch.autograd.Function):  
@@ -82,14 +84,26 @@ def train(input_tensor, output_tensor, encoder, encoder_optimizer, decoder, deco
 
     decoder_hidden = encoder_hidden
 
-    for di in range(output_length):
-        decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden)
-        topv, topi = decoder_output.topk(1)
-        decoder_input = topi.squeeze().detach()  # detach from history as input
-        loss += criterion(decoder_output, output_tensor[di])
+    forcing = random.random()
 
-        if decoder_input.item() == EOS_token:
-            break
+    if forcing > 0.5:
+        for di in range(output_length):
+            decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden)
+            decoder_input = output_tensor[di]
+            loss += criterion(decoder_output, output_tensor[di])
+
+            if decoder_input.item() == EOS_token:
+                break
+
+    else:
+        for di in range(output_length):
+            decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden)
+            topv, topi = decoder_output.topk(1)
+            decoder_input = topi.squeeze().detach()  # detach from history as input
+            loss += criterion(decoder_output, output_tensor[di])
+
+            if decoder_input.item() == EOS_token:
+                break
 
     #loss = CustomLoss
     loss.backward()
