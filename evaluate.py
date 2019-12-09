@@ -11,14 +11,12 @@ from layers_attempt import *
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=100):
-    import ipdb; ipdb.set_trace()
     with torch.no_grad():
         input_tensor = tensorFromSentence(input_lang, sentence)
         input_length = input_tensor.size()[0]
         encoder_hidden = encoder.initHidden()
 
         encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
-        import ipdb; ipdb.set_trace()
         for ei in range(input_length):
             encoder_output, encoder_hidden = encoder(input_tensor[ei],
                                                      encoder_hidden)
@@ -30,7 +28,6 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=100
 
         decoded_words = []
         decoder_attentions = torch.zeros(max_length, max_length)
-        import ipdb; ipdb.set_trace()
         for di in range(max_length):
             decoder_output, decoder_hidden = decoder(
                 decoder_input, decoder_hidden)
@@ -42,7 +39,6 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=100
                 decoded_words.append(output_lang.index2word[topi.item()])
 
             decoder_input = topi.squeeze().detach()
-        import ipdb; ipdb.set_trace()
         return decoded_words
 
 dl = DataLoader("SCAN")
@@ -67,4 +63,12 @@ decoder = Decoder(200, train_out.n_words)
 
 losses = trainIters(encoder, decoder, train_data, train_in, train_out)
 
+miss = 0
+
+for test_point in test_data:
+    pred = evaluate(encoder, decoder, test_point[0], train_in, train_out)
+    if pred != test_point[1]:
+        miss += 1
+
+import ipdb; ipdb.set_trace()
 #evaluate(encoder, decoder, train_data[500][0], train_in, train_out)
