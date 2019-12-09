@@ -28,7 +28,9 @@ class GRUEncoder(nn.Module):
         return output, hidden
 
     def initHidden(self):
-        return torch.zeros(self.layers, 1, self.hidden_size, device=device)
+        hidden = torch.empty(self.layers, 1, self.hidden_size, device=device)
+        nn.init.xavier_uniform_(hidden, gain=nn.init.calculate_gain('relu'))
+        return hidden
 
 class GRUDecoder(nn.Module):
     def __init__(self, hidden_size, output_size, layers, drop):
@@ -49,4 +51,7 @@ class GRUDecoder(nn.Module):
         return output, hidden
 
     def initHidden(self):
-        return torch.zeros(self.layers, 1, self.hidden_size, device=device)
+        hidden = torch.empty(self.layers, 1, self.hidden_size, device=device)
+        nn.init.xavier_uniform_(hidden, gain=nn.init.calculate_gain('relu'))
+        return hidden
+

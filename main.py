@@ -19,10 +19,6 @@ for datapoint in train_data:
         train_in.addSentence(datapoint[0])
         train_out.addSentence(datapoint[1])
 
-for datapoint in test_data:
-        test_in.addSentence(datapoint[0])
-        test_out.addSentence(datapoint[1])
-
 encoder_layers=2
 decoder_layers=2
 encoder_dropout=0.5
