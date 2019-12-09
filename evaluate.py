@@ -22,15 +22,13 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=100
                                                      encoder_hidden)
             encoder_outputs[ei] += encoder_output[0, 0]
 
-        decoder_input = torch.tensor([[SOS_token]], device=device)  # SOS
+        decoder_input = torch.tensor([[SOS_token]], device=device)
 
         decoder_hidden = encoder_hidden
 
         decoded_words = []
-        decoder_attentions = torch.zeros(max_length, max_length)
         for di in range(max_length):
-            decoder_output, decoder_hidden = decoder(
-                decoder_input, decoder_hidden)
+            decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden)
             topv, topi = decoder_output.data.topk(1)
             if topi.item() == EOS_token:
                 #decoded_words.append('<EOS>')
@@ -41,35 +39,19 @@ def evaluate(encoder, decoder, sentence, input_lang, output_lang, max_length=100
             decoder_input = topi.squeeze().detach()
         return decoded_words
 
-dl = DataLoader("SCAN")
-train_data, test_data = dl.load_1a()
+def evaluateIters(test_data, encoder, decoder, lang_in, lang_out):
+    miss = 0
+    iters = 0
 
-train_in = Lang("train_input")
-train_out = Lang("train_output")
+    for test_point in test_data:
+        pred = evaluate(encoder, decoder, test_point[0], lang_in, lang_out)
+        pred = " ".join(pred)
+        if pred != test_point[1]:
+            miss += 1
+        iters += 1
 
-test_in = Lang("test_input")
-test_out = Lang("test_output")
+        if iters % 100 == 0:
+            print(iters)
+            print(miss)
 
-for datapoint in train_data:
-        train_in.addSentence(datapoint[0])
-        train_out.addSentence(datapoint[1])
-
-for datapoint in test_data:
-        test_in.addSentence(datapoint[0])
-        test_out.addSentence(datapoint[1])
-
-encoder = Encoder(train_in.n_words, 200)
-decoder = Decoder(200, train_out.n_words)
-
-losses = trainIters(encoder, decoder, train_data, train_in, train_out)
-
-miss = 0
-
-for test_point in test_data:
-    pred = evaluate(encoder, decoder, test_point[0], train_in, train_out)
-    pred = " ".join(pred)
-    if pred != test_point[1]:
-        miss += 1
-
-import ipdb; ipdb.set_trace()
-#evaluate(encoder, decoder, train_data[500][0], train_in, train_out)
+    return miss
