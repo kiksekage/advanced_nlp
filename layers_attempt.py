@@ -112,7 +112,7 @@ def trainIters(encoder, decoder, train_data, input_lang, output_lang, learning_r
     print(train_data.shape[0])
     print_loss_total = 0
 
-    for iter in range(train_data.shape[0]):
+    for iter in range(200):
         training_pair = tensorsFromPair(train_data[iter], input_lang, output_lang)
         input_tensor = training_pair[0]
         output_tensor = training_pair[1]
@@ -127,27 +127,3 @@ def trainIters(encoder, decoder, train_data, input_lang, output_lang, learning_r
             print_loss_total = 0
 
     return losses
-
-
-
-dl = DataLoader("SCAN")
-train_data, test_data = dl.load_1a()
-
-train_in = Lang("train_input")
-train_out = Lang("train_output")
-
-test_in = Lang("test_input")
-test_out = Lang("test_output")
-
-for datapoint in train_data:
-        train_in.addSentence(datapoint[0])
-        train_out.addSentence(datapoint[1])
-
-for datapoint in test_data:
-        test_in.addSentence(datapoint[0])
-        test_out.addSentence(datapoint[1])
-
-encoder = Encoder(train_in.n_words, 200)
-decoder = Decoder(200, train_out.n_words)
-
-losses = trainIters(encoder, decoder, train_data, train_in, train_out)
