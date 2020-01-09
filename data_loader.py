@@ -1,10 +1,11 @@
 import os
 import numpy as np
+import random
 
 class DataLoader():
     def __init__(self, filepath):
         cwd = os.getcwd()
-        self.basepath = cwd+"/"+filepath
+        self.basepath = filepath
         try:
             os.stat(self.basepath+"/add_prim_split")
             os.stat(self.basepath+"/few_shot_split")
