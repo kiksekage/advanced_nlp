@@ -13,7 +13,7 @@ import random
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def train(input_tensor, output_tensor, encoder, encoder_optimizer, decoder, decoder_optimizer, criterion, max_length, clipping_value=5, mode='RNN'):
+def train(input_tensor, output_tensor, encoder, encoder_optimizer, decoder, decoder_optimizer, criterion, max_length, clipping_value=5):
     encoder_hidden1 = encoder.initHidden()
     encoder_hidden2 = encoder.initHidden()
 
@@ -28,7 +28,7 @@ def train(input_tensor, output_tensor, encoder, encoder_optimizer, decoder, deco
     loss = 0
 
     for ei in range(input_length):
-        if mode == 'LSTM':
+        if encoder.mode == 'LSTM':
             encoder_output, (encoder_hidden1, encoder_hidden2) = encoder(input_tensor[ei], (encoder_hidden1, encoder_hidden2))
         else: 
             encoder_output, encoder_hidden1 = encoder(input_tensor[ei], encoder_hidden1)
@@ -43,21 +43,23 @@ def train(input_tensor, output_tensor, encoder, encoder_optimizer, decoder, deco
 
     if forcing:
         for di in range(output_length):
-            if mode == 'LSTM':
-                decoder_output, (decoder_hidden1, decoder_hidden2) = decoder(decoder_input, (decoder_hidden1, decoder_hidden2), encoder_outputs)
+            if decoder.mode == 'LSTM':
+              decoder_output, (decoder_hidden1, decoder_hidden2) = decoder(decoder_input, (decoder_hidden1, decoder_hidden2), encoder_outputs)
             else:
-                decoder_output, decoder_hidden1 = decoder(decoder_input, decoder_hidden1, encoder_outputs)
+              decoder_output, decoder_hidden1 = decoder(decoder_input, decoder_hidden1, encoder_outputs)
+            
             decoder_input = output_tensor[di]
             loss += criterion(decoder_output, output_tensor[di])
 
             if decoder_input.item() == EOS_token:
-                break
+              break
     else:
         for di in range(output_length):
-            if mode == 'LSTM':
-                decoder_output, (decoder_hidden1, decoder_hidden2) = decoder(decoder_input, (decoder_hidden1, decoder_hidden2), encoder_outputs)
+            if decoder.mode == 'LSTM':
+              decoder_output, (decoder_hidden1, decoder_hidden2) = decoder(decoder_input, (decoder_hidden1, decoder_hidden2), encoder_outputs)
             else:
-                decoder_output, decoder_hidden1 = decoder(decoder_input, decoder_hidden1, encoder_outputs)
+              decoder_output, decoder_hidden1 = decoder(decoder_input, decoder_hidden1, encoder_outputs)
+            
             topv, topi = decoder_output.topk(1)
             decoder_input = topi.squeeze().detach()
             loss += criterion(decoder_output, output_tensor[di])
@@ -76,7 +78,7 @@ def train(input_tensor, output_tensor, encoder, encoder_optimizer, decoder, deco
     return loss.item() / output_length
 
     
-def trainIters(encoder, decoder, train_data, input_lang, output_lang, max_length, learning_rate=0.001, mode='RNN'):
+def trainIters(encoder, decoder, train_data, input_lang, output_lang, max_length, learning_rate=0.001):
     encoder_optimizer = optim.Adam(encoder.parameters(), lr=learning_rate)
     decoder_optimizer = optim.Adam(decoder.parameters(), lr=learning_rate)
     criterion = nn.NLLLoss()
@@ -94,7 +96,7 @@ def trainIters(encoder, decoder, train_data, input_lang, output_lang, max_length
             input_tensor = input_tensor.cuda()
             output_tensor = output_tensor.cuda()
         
-        loss = train(input_tensor, output_tensor, encoder, encoder_optimizer, decoder, decoder_optimizer, criterion, max_length, mode=mode)
+        loss = train(input_tensor, output_tensor, encoder, encoder_optimizer, decoder, decoder_optimizer, criterion, max_length)
         print_loss_total += loss
 
         if iter % 1000 == 0:
@@ -114,7 +116,7 @@ def train_and_save(train_data, train_in, train_out, model, dropout, att, layers,
         encoder.cuda()
         decoder.cuda()
 
-    losses = trainIters(encoder, decoder, train_data, train_in, train_out, MAX_LENGTH, mode=model)
+    losses = trainIters(encoder, decoder, train_data, train_in, train_out, MAX_LENGTH)
     plt.plot(losses)
     plt.title(model+'_layers='+str(layers)+'_drop='+str(dropout)+'_attention='+str(att))
     plt.xlabel('iterations')
@@ -125,11 +127,11 @@ def train_and_save(train_data, train_in, train_out, model, dropout, att, layers,
 
 def load_models(train_in_nwords, train_out_nwords, hidden_size, layers, mode, dropout_p, attention, file_location, model_name, max_length=100):
     encoder = Encoder(train_in_nwords, hidden_size, layers=layers, mode=mode, dropout_p=dropout_p)
-    encoder.load_state_dict(torch.load(file_location+model_name+"_encoder.pt"))
+    encoder.load_state_dict(torch.load(file_location+model_name+"_encoder.pt", map_location=device))
     encoder.eval()
 
     decoder = Decoder(hidden_size, train_out_nwords, max_length, layers=layers, mode=mode, dropout_p=dropout_p, attention=attention)
-    decoder.load_state_dict(torch.load(file_location+model_name+"_decoder.pt"))
+    decoder.load_state_dict(torch.load(file_location+model_name+"_decoder.pt", map_location=device))
     decoder.eval()
 
     return encoder, decoder

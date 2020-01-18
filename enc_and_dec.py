@@ -1,6 +1,3 @@
-from data_loader import *
-from embeddings import *
-
 import torch
 
 import torch.nn as nn
@@ -15,15 +12,16 @@ class Encoder(nn.Module):
         self.hidden_size = hidden_size
         self.dropout_p = dropout_p
         self.layers = layers
+        self.mode = mode
         
         self.embedding = nn.Embedding(input_size, hidden_size)
         self.dropout = nn.Dropout(self.dropout_p)
 
         self.hidden_layer = nn.RNN(self.hidden_size, self.hidden_size, num_layers=self.layers, dropout=self.dropout_p)
 
-        if mode == 'LSTM':
+        if self.mode == 'LSTM':
         	self.hidden_layer = nn.LSTM(self.hidden_size, self.hidden_size, num_layers=self.layers, dropout=self.dropout_p)
-        elif mode == 'GRU':
+        elif self.mode == 'GRU':
         	self.hidden_layer = nn.GRU(self.hidden_size, self.hidden_size, num_layers=self.layers, dropout=self.dropout_p)
 
     def forward(self, input, hidden):
@@ -58,9 +56,9 @@ class Decoder(nn.Module):
 
         self.hidden_layer = nn.RNN(self.hidden_size, self.hidden_size, num_layers=self.layers, dropout=self.dropout_p)
 
-        if mode == 'LSTM':
+        if self.mode == 'LSTM':
         	self.hidden_layer = nn.LSTM(self.hidden_size, self.hidden_size, num_layers=self.layers, dropout=self.dropout_p)
-        elif mode == 'GRU':
+        elif self.mode == 'GRU':
         	self.hidden_layer = nn.GRU(self.hidden_size, self.hidden_size, num_layers=self.layers, dropout=self.dropout_p)
         
         self.out = nn.Linear(hidden_size, output_size)
@@ -72,9 +70,9 @@ class Decoder(nn.Module):
 
         if self.attention:
           if self.mode=="LSTM":
-            attn_weights = F.softmax(self.attn(torch.cat((output[0], hidden[0][0]), 1)), dim=1)   
+            attn_weights = F.softmax(self.attn(torch.cat((output[0], hidden[0][0]), 1)), dim=1) #should be hidden[0][self.layers-1]
           else:
-            attn_weights = F.softmax(self.attn(torch.cat((output[0], hidden[0]), 1)), dim=1)   
+            attn_weights = F.softmax(self.attn(torch.cat((output[0], hidden[0]), 1)), dim=1) #should be hidden[self.layers-1]
           attn_applied = torch.bmm(attn_weights.unsqueeze(0),encoder_outputs.unsqueeze(0))
           output = torch.cat((output[0], attn_applied[0]), 1)
           output = self.attn_combine(output).unsqueeze(0)

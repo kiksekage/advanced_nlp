@@ -2,3 +2,6 @@ Assignment 2+3.pdf
 SCAN/
 paper.pdf
 __pycache__/
+*.png
+pics/
+.DS_Store
