@@ -2,7 +2,8 @@ from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
 import numpy as np
 
-'''#experiment 1b
+'''
+#experiment 1b
 y1 = [12.16, 09.73, 11.82, 10.88, 10.98]
 y2 = [40.53, 46.44, 42.65, 47.78, 44.62]
 y4 = [90.07, 91.66, 91.30, 91.11, 97.61]
@@ -38,6 +39,7 @@ fig, ax = plt.subplots()
 ax.bar(x, means, yerr=error, align='center', alpha=0.5, ecolor='black', capsize=10)
 ax.set_ylabel('Accuracy on new commands (%)')
 ax.set_xticks(x)
+ax.set_ylim(top=100)
 ax.set_xticklabels(x_pos)
 ax.set_xlabel('Percent of commands used for training')
 ax.yaxis.grid(True)
@@ -73,7 +75,6 @@ g33 = [x*100 for x in g33]
 g36 = [x*100 for x in g36]
 g40 = [x*100 for x in g40]
 g48 = [x*100 for x in g48]
-
 
 g24_mean = np.mean(g24)
 g25_mean = np.mean(g25)
@@ -121,6 +122,7 @@ plt.savefig('2_action.png')
 plt.show()
 '''
 
+'''
 #experiment 2, command sequence length
 c4 = [0.0, 0.0, 0.0, 0.0, 0.0]
 c6 = [0.0, 0.0, 0.0, 0.0, 0.0]
@@ -167,3 +169,48 @@ ax.yaxis.grid(True)
 plt.tight_layout()
 plt.savefig('2_command.png')
 plt.show()
+'''
+'''
+# experiment 3, composite commands
+y1 = [0.0, 0.0, 0.0, 0.0, 0.0]
+y2 = [1.0, 8.2, 0.6, 0.2, 1.0]
+y4 = [4.2, 1.4, 4.4, 2.3, 2.4]
+y8 = [13, 3, 15.5, 6, 16.1]
+y16 = [33.25, 69.67, 48.2, 62.7, 31]
+y32 = [79.9,62.8,80.6,82.7,77.6]
+
+y1_mean = np.mean(y1)
+y2_mean = np.mean(y2)
+y4_mean = np.mean(y4)
+y8_mean = np.mean(y8)
+y16_mean = np.mean(y16)
+y32_mean = np.mean(y32)
+
+y1_std = np.std(y1)
+y2_std = np.std(y2)
+y4_std = np.std(y4)
+y8_std = np.std(y8)
+y16_std = np.std(y16)
+y32_std = np.std(y32)
+
+means = [y1_mean, y2_mean, y4_mean, y8_mean, y16_mean, y32_mean]
+error = [y1_std, y2_std, y4_std, y8_std, y16_std, y32_std]
+
+
+x = np.arange(len(means))
+x_pos = ["1", "2", "4", "8", "16", "32"]
+
+fig, ax = plt.subplots()
+ax.bar(x, means, yerr=error, align='center', alpha=0.5, ecolor='black', capsize=10)
+ax.set_ylabel('Accuracy on new commands (%)')
+ax.set_ylim(top=100)
+ax.set_xticks(x)
+ax.set_xticklabels(x_pos)
+ax.set_xlabel('Number of composed commands used for training')
+ax.yaxis.grid(True)
+
+# Save the figure and show
+plt.tight_layout()
+plt.savefig('comp_commands.png')
+plt.show()
+'''
