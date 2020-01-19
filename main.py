@@ -39,6 +39,7 @@ hidden_units=200
 model='LSTM'
 model_name="test_model"
 
+#adjust the number of models you want to train: 1 iter = 1 model
 for i in range(1, 2):
     train_and_save(train_data[:100], train_in, train_out, model, 0.0, False, 2, model_name+str(i), file_location, hidden_units=hidden_units)
     encoder, decoder = load_models(train_in.n_words, train_out.n_words, hidden_units, 2, model, 0.0, False, file_location, model_name+str(i))
