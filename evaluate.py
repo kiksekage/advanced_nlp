@@ -182,14 +182,3 @@ def evaluateItersAlt(test_data, encoder, decoder, train_in, train_out, oracle=Fa
 		return hit, hit_idx, miss, miss_idx, hidden_state_vectors
 	else:
 	  	return hit, hit_idx, miss, miss_idx
-
-def evaluate_and_save(test_data, model_name, save_file, encoder, decoder, train_in, train_out):
-	print(encoder.hidden_size)
-	hit, hit_idx, miss, miss_idx = evaluateIters(test_data, encoder, decoder, train_in, train_out)
-	acc = 1-miss/len(test_data)
-
-	with open("models/"+save_file, 'a') as f:
-		f.write("Model name: " + model_name + "\n")
-		f.write("Hits: " + str(hit) + "\n")
-		f.write("Miss: " + str(miss) + "\n")
-		f.write("Accuracy: " + str(acc) + "\n")

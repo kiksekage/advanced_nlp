@@ -1,0 +1,9 @@
+NOTE: two reference models are included in the models/ folder, this is were models will be saved and loaded from.
+
+The full jupyter notebook is present in "complete_script.ipynb", though this is not the cleanest way of running the code locally
+To run a training, saving and evaluation instance (setup is for experiment 1a): python main.py
+To run oracle experiment: python oracle.py
+To run cosine similarity experiment: python cosine.py
+To run action/command length experiment: python action_command_length.py
+
+Needed libraries are: pytorch, numpy and scipy
