@@ -10,6 +10,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 dl = DataLoader("SCAN")
 MAX_LENGTH = 100
 file_location = "models/"
+
 '''
 # BEST OVERALL MODEL
 hidden_units=200
@@ -72,7 +73,7 @@ for datapoint in test_data:
 encoder, decoder = load_models(train_in.n_words, train_out.n_words, hidden_units, 1, model, 0.1, True, file_location, "3rd_GRU_100_dim_1_layer_att_0.1_drop5")
 hit, hit_idx, miss, miss_idx, hidden_state_vectors = evaluateItersAlt(train_data, encoder, decoder, train_in, train_out, vectors=True)
 
-_, run_vec = evaluateAlt(encoder, decoder, "run", train_in, train_out, 1)
+_, run_vec = evaluateAlt(encoder, decoder, "jump", train_in, train_out, 1)
 
 vectors = []
 for x in hidden_state_vectors:
