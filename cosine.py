@@ -11,7 +11,6 @@ dl = DataLoader("SCAN")
 MAX_LENGTH = 100
 file_location = "models/"
 
-'''
 # BEST OVERALL MODEL
 hidden_units=200
 model='LSTM'
@@ -48,7 +47,8 @@ vectors = np.array(vectors, dtype=dtype)
 vectors_sorted = np.sort(vectors, order="cosine")
 
 print(vectors_sorted[len(vectors_sorted)-6:-1]) #in reverse order
-'''
+
+
 # GRU, TASK SPECIFIC BEST MODEL
 hidden_units=100
 model='GRU'
@@ -77,7 +77,8 @@ _, run_vec = evaluateAlt(encoder, decoder, "jump", train_in, train_out, 1)
 
 vectors = []
 for x in hidden_state_vectors:
-    vectors.append((x[0], 1-scipy.spatial.distance.cosine(run_vec[1], x[1][1].cpu())))
+    if x[0] != "jump":
+        vectors.append((x[0], 1-scipy.spatial.distance.cosine(run_vec[0], x[1][0].cpu())))
 
 dtype = [('command', 'S100'), ('cosine', float)]
 vectors = np.array(vectors, dtype=dtype)
