@@ -32,13 +32,14 @@ for datapoint in test_data:
         test_in.addSentence(datapoint[0])
         test_out.addSentence(datapoint[1])
 
-train_data = train_data[np.random.choice(1000000, 1, replace=True), :]
+train_data = train_data[np.random.choice(100000, 1, replace=True), :]
 
 file_location = "models/"
 hidden_units=200
 model='LSTM'
 model_name="test_model"
 
+#adjust the number of models you want to train: 1 iter = 1 model
 for i in range(1, 2):
     train_and_save(train_data[:100], train_in, train_out, model, 0.0, False, 2, model_name+str(i), file_location, hidden_units=hidden_units)
     encoder, decoder = load_models(train_in.n_words, train_out.n_words, hidden_units, 2, model, 0.0, False, file_location, model_name+str(i))
