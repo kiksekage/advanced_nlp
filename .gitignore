@@ -6,3 +6,6 @@ __pycache__/
 pics/
 .DS_Store
 *.pyc
+handin/
+*.zip
+report.pdf

@@ -32,7 +32,7 @@ for datapoint in test_data:
         test_in.addSentence(datapoint[0])
         test_out.addSentence(datapoint[1])
 
-train_data = train_data[np.random.choice(train_data.shape[0], 1, replace=True), :]
+train_data = train_data[np.random.choice(1000000, 1, replace=True), :]
 
 file_location = "models/"
 hidden_units=200

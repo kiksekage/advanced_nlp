@@ -7,3 +7,4 @@ To run cosine similarity experiment: python cosine.py
 To run action/command length experiment: python action_command_length.py
 
 Needed libraries are: pytorch, numpy and scipy
+Folders needed: The SCAN data folder needs to be in the working directory of the zip file
